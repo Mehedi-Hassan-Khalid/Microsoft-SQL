@@ -1,0 +1,181 @@
+--Create Database Command: create database Database_Name; [create database College;]
+create database University;
+
+
+
+
+
+--Remove Database Command: drop database Database_Name [drop database College]
+drop database College
+
+
+
+
+
+--Use Database Command: use Database_Name; [use University;]
+use University;
+
+
+
+
+
+--Create Table Command: create table Table_Name(Rom_Name1,Rom_Name2,..); [create table Students(LastName,FirstName,DateOfBirth);]
+create table Students(
+
+	ID int primary key identity(7713,1) not null,
+	First_Name nvarchar(100) not null,
+	Last_Name nvarchar(100) not null,
+	Date_Of_Birth datetime not null,
+	Enroll_Ment_Date datetime not null
+
+);
+create table Courses(
+
+	Course_ID int primary key identity(1,1) not null,
+	Course_Name nvarchar(50) not null,
+	Course_code nvarchar(50) not null,
+	Course_Title nvarchar(100) not null,
+	Course_credits int
+
+);
+
+
+
+
+--Insert Data into the Table Command: insert into DataTableName(Rom_name1,Rom_Name2,....) [insert into Students(LastName,FirstName,DateOfBirth)]
+use University
+insert into Students(First_Name,[Last_Name],[Date_Of_Birth],[Enroll_Ment_Date])
+
+
+
+
+--Value Date into the table Command: values('value1','value2',....) [values('Kumar','Tamal','1999-09-23','2018-01-01')]
+values('Tamal','Kumar','1999-12-15','2018-01-01'),
+('Nabil','Hassan','1999-05-23','2018-01-01'),
+('Mehedi','Hassan','1999-09-12','2018-01-01'),
+('Sanjida','Mun','1998-08-22','2018-01-01')
+
+
+
+
+--Display Show
+use University
+select * from Students  --selects all of the records and all columns 
+
+select First_Name, Last_Name from Students  -- You may specify the columns you would like to see
+
+select First_Name as'First Name', Last_Name [Last Name], Date_Of_Birth [Date of Birth] from Students  -- you may also add an alias and represent the output column name as you wish
+
+select top (3) [ID],[First_Name],[Last_Name],[Date_Of_Birth],[Enroll_Ment_Date] FROM [University].[dbo].[Students]  --Script for SelectTopNRows command from SSMS
+
+select First_Name, Last_Name, Date_Of_Birth as [Date of Birth] from University.dbo.Students where Last_Name = 'Hassan'  --Condition apply
+
+select First_Name, Last_Name, Date_Of_Birth as [Date of Birth] from University.dbo.Students where Last_Name like '%s%'  -- start and end are between 's' latter
+
+select First_Name, Last_Name, Date_Of_Birth as [Date of Birth] from University.dbo.Students where Last_Name like 'h%'  -- start 'h' and after 'h' can be latter 
+
+select First_Name, Last_Name, First_Name+' '+Last_Name as [Full Name], Date_Of_Birth [Date of Birth] from University.dbo.Students  --Retrieve only Full Names of Students
+
+select Course_ID, Course_code, Course_Title, Course_credits from University.dbo.Courses where Course_credits <= 3;  --Condition greater/less/equal
+
+
+
+
+
+--Update Database
+update Students set Enroll_Ment_Date = '2021-01-01' where Enroll_Ment_Date = '2020-01-01';
+
+update Students set Enroll_Ment_Date = '2021-01-01'
+
+update Students set First_Name = 'Sadiya', Last_Name = 'Jahan Tamim' where ID = 7725;
+
+update Students set Enroll_Ment_Date = '2018-01-01' where ID = 7721 or ID = 7722 or ID = 7723 or ID = 7724;
+
+
+
+
+
+--Delete Database Command: delete from Table_Name where Condition;  [delete from Courses where Course_ID = 9;]
+delete from Courses where Course_ID = 9;
+
+delete from Courses where Course_Title = 'Physics' or Course_credits = 3;
+
+delete from Courses where Course_Title like '%h%';
+
+
+
+
+
+
+--Relationship
+use Mentors
+select * from Students;
+select * from Teachers;
+select * from Courses;
+
+--Joins
+select * from Enroll_Ment
+inner join Students on Students.StudentID = Enroll_Ment.Student_ID
+inner join Teachers on Teachers.TeacherID = Enroll_Ment.Teacher_ID
+inner join Courses on Courses.CourseID = Enroll_Ment.Course_ID
+
+--Another way
+select 
+s.First_Name+' '+s.Last_Name as [Student Full Name], 
+t.First_Name+' '+t.Last_Name [Teacher Full Name],
+c.Course_Code [Course Code], c.Course_Title [Course Title], c.Course_credits [Course Credits]
+from Enroll_Ment e
+inner join Students s on s.StudentID = e.Student_ID
+inner join Teachers t on t.TeacherID = e.Teacher_ID
+inner join Courses c on c.CourseID = e.Course_ID
+
+--Another
+select 
+s.First_Name+' '+s.Last_Name as [Student Full Name], 
+t.First_Name+' '+t.Last_Name [Teacher Full Name],
+c.Course_Code [Course Code], c.Course_Title [Course Title], c.Course_credits [Course Credits]
+from Enroll_Ment e
+inner join Students s on s.StudentID = e.Student_ID
+inner join Teachers t on t.TeacherID = e.Teacher_ID
+inner join Courses c on c.CourseID = e.Course_ID
+where ID=2
+order by c.Course_Title;
+
+
+
+
+
+
+--Grouping data command: SELECT column_name(s)
+						--FROM table_name
+						--WHERE condition
+						--GROUP BY column_name(s)
+						--ORDER BY column_name(s);
+Select ID, Teacher_ID, Student_ID, Course_ID, Grade
+from Enroll_Ment
+where Teacher_ID = 601
+group by ID,Teacher_ID, Student_ID, Course_ID, Grade
+order by Grade;
+
+
+
+
+
+
+--Aggregate Function command:
+
+select count(*) [Total Row], avg(Grade) [Average CGPA], sum(Grade) [Total CGPA], max(Grade) [Maximun CGPA], min(Grade) [Minimum CGPA]
+from Enroll_Ment;
+
+select count(*) [Total Row], avg(Grade) [Average CGPA], sum(Grade) [Total CGPA], max(Grade) [Maximun CGPA], min(Grade) [Minimum CGPA]
+from Enroll_Ment
+where Student_ID = 7713
+order by [Average CGPA];
+
+
+
+
+
+
+--Rename Database Command: exec sp_rename 'Old_Database_Name', 'Update_Database_Name'
+exec sp_rename 'Student_Course', 'Students_Courses'
